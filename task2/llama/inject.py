@@ -9,7 +9,8 @@
 #   1) ggml/src/ggml-cpu/ggml-cpu.c    -- insert the dispatch block inside ggml_compute_forward_mul_mat
 #   2) ggml/src/ggml-cpu/CMakeLists.txt -- add the adapter to the CPU backend sources
 
-import sys, os
+import sys
+import os
 
 MARKER = "CS683 PA-1 student matmul injection"
 
@@ -47,7 +48,8 @@ def patch_cpu_c(root):
         print("  ggml-cpu.c already injected  skipping")
         return
     if ANCHOR not in src:
-        sys.exit(f"ERROR: anchor not found in {path} (llama.cpp version mismatch?)")
+        sys.exit(f"ERROR: anchor not found in {
+                 path} (llama.cpp version mismatch?)")
     # Insert the dispatch block right before the anchor comment (which sits at the top of
     # ggml_compute_forward_mul_mat, after the ith/nth locals are in scope).
     src = src.replace(ANCHOR, CALL_BLOCK + "\n" + ANCHOR, 1)
@@ -64,7 +66,8 @@ def patch_cmake(root):
     key = "ggml-cpu/ggml-cpu.cpp"
     if key not in src:
         sys.exit(f"ERROR: '{key}' not found in {path} (version mismatch?)")
-    src = src.replace(key, key + "\n        ggml-cpu/ggml_student_sgemm.cpp", 1)
+    src = src.replace(
+        key, key + "\n        ggml-cpu/ggml_student_sgemm.cpp", 1)
     open(path, "w").write(src)
     print("  patched CMakeLists.txt")
 
