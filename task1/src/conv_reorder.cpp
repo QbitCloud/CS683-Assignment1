@@ -4,45 +4,27 @@
 #include "convolution.h"
 #include <cstring>
 void conv_reorder(const float *in, float *out, const float *ker, int H, int W,
-                  int K) {
-  // const int p = K / 2;
-  // const int in_stride = W + 2 * p;
-  // for (int oy = 0; oy < H; ++oy) {
-  //   for (int ox = 0; ox < W; ++ox) {
-  //     out[oy * W + ox] = 0.0f;
-  //   }
-  // }
+                  int K)
+{
+  const int p = K / 2;
+  const int in_stride = W + 2 * p;
 
-  // for (int ky = 0; ky < K; ++ky) {
-  //   for (int kx = 0; kx < K; ++kx) {
+  std::memset(out, 0, sizeof(float) * H * W);
 
-  //     const float k = ker[ky * K + kx];
-
-  //     for (int oy = 0; oy < H; ++oy) {
-  //       for (int ox = 0; ox < W; ++ox) {
-
-  //         out[oy * W + ox] += in[(oy + ky) * in_stride + (ox + kx)] * k;
-  //       }
-  //     }
-  //   }
-  // }
-  // conv_naive(in, out, ker, H, W, K);
-                    const int p = K / 2;
-                    const int in_stride = W + 2 * p;
-                    
-                    std::memset(out, 0, sizeof(float) * H * W);
-                    
-                    for (int ky = 0; ky < K; ++ky) {
-        for (int kx = 0; kx < K; ++kx) {
-          const float kval = ker[ky * K + kx];        // loop-invariant, hoisted
-          for (int oy = 0; oy < H; ++oy) {
-            const float *in_row  = in  + (oy + ky) * in_stride + kx;
-            float       *out_row = out + oy * W;
-            for (int ox = 0; ox < W; ++ox) {
-              out_row[ox] += in_row[ox] * kval;    // unit-stride, no cross-lane dependency
-            }
-          }
+  for (int ky = 0; ky < K; ++ky)
+  {
+    for (int kx = 0; kx < K; ++kx)
+    {
+      const float kval = ker[ky * K + kx]; // loop-invariant, hoisted
+      for (int oy = 0; oy < H; ++oy)
+      {
+        const float *in_row = in + (oy + ky) * in_stride + kx;
+        float *out_row = out + oy * W;
+        for (int ox = 0; ox < W; ++ox)
+        {
+          out_row[ox] += in_row[ox] * kval; // unit-stride, no cross-lane dependency
         }
       }
     }
-
+  }
+}
