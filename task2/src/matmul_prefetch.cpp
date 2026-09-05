@@ -6,22 +6,11 @@
 namespace {
 constexpr int BN = 32;
 
-<<<<<<< HEAD
 inline float dot_single(const float *a, const float *b, int K) {
   __m256 acc0 = _mm256_setzero_ps();
   __m256 acc1 = _mm256_setzero_ps();
   __m256 acc2 = _mm256_setzero_ps();
   __m256 acc3 = _mm256_setzero_ps();
-=======
-
-/*
-static inline void prefetch_matmul_data(const float *a, const float *b, int p,
-                                        int K) {
-  int prefetch_distance = 32;
-  int prefetch_degree = 2;
-  // Distance is expressed in SIMD iterations (8 floats each).
-  const int pf = p + prefetch_distance * 8;
->>>>>>> 68ea743 ( SIMD commit)
 
   int p = 0;
 
