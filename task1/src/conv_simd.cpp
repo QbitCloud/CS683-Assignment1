@@ -27,3 +27,29 @@ void conv_simd(const float *in, float *out, const float *ker,
         }
     }
 }
+
+// // 128 bit register version
+// void conv_simd(const float *in, float *out, const float *ker,
+//                int H, int W, int K)
+// {
+//     const int p = K / 2;
+//     const int in_stride = W + 2 * p; // padded row stride
+
+//     for (int oy = 0; oy < H; ++oy)
+//     {
+//         for (int ox = 0; ox < W; ox += 8)
+//         {
+//             __m128 acc = _mm_setzero_ps();
+//             for (int ky = 0; ky < K; ++ky)
+//             {
+//                 for (int kx = 0; kx < K; ++kx)
+//                 {
+//                     __m128 input = _mm_loadu_ps(&in[(oy + ky) * in_stride + (ox + kx)]);
+//                     __m128 kernal = _mm_broadcast_ss(&ker[ky * K + kx]);
+//                     acc = _mm_fmadd_ps(input, kernal, acc);
+//                 }
+//             }
+//             _mm_storeu_ps(&out[oy * W + ox], acc);
+//         }
+//     }
+// }
