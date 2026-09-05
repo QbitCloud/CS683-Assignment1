@@ -12,6 +12,7 @@
 
 #include "matmul.h"
 
+<<<<<<< HEAD
 // void matmul_optimized(const float* A, const float* B, float* C,
 //                       int M, int N, int K, int lda, int ldb, int ldc) {
 //     // TODO(student): replace this placeholder with your best combined
@@ -165,4 +166,17 @@ void matmul_optimized(const float *A, const float *B, float *C, int M, int N,
       }
     }
   }
+=======
+void matmul_optimized(const float* A, const float* B, float* C,
+                      int M, int N, int K, int lda, int ldb, int ldc) {
+    // TODO(student): replace this placeholder with your best combined implementation.
+    matmul_simd(A, B, C, M, N, K, lda, ldb, ldc);
+
+   
+
+
+
+
+
+>>>>>>> 68ea743 ( SIMD commit)
 }
