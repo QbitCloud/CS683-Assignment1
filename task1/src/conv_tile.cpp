@@ -38,8 +38,3 @@ void conv_tile(const float* in, float* out, const float* ker,
 }
 
 
-
-
-
-
-}
