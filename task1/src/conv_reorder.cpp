@@ -9,20 +9,24 @@ void conv_reorder(const float *in, float *out, const float *ker, int H, int W,
   const int p = K / 2;
   const int in_stride = W + 2 * p;
 
-  std::memset(out, 0, sizeof(float) * H * W);
-
-  for (int ky = 0; ky < K; ++ky)
+  for (int oy = 0; oy < H; ++oy)
   {
-    for (int kx = 0; kx < K; ++kx)
+    //h
+    float *out_row = out + oy * W;
+    std::memset(out_row, 0, sizeof(float) * W);
+
+    for (int ky = 0; ky < K; ++ky)
     {
-      const float kval = ker[ky * K + kx]; // loop-invariant, hoisted
-      for (int oy = 0; oy < H; ++oy)
+      const float *in_row = in + (oy + ky) * in_stride;
+      const float *ker_row = ker + ky * K;
+
+      for (int kx = 0; kx < K; ++kx)
       {
-        const float *in_row = in + (oy + ky) * in_stride + kx;
-        float *out_row = out + oy * W;
+        // "hoisted"
+        const float kval = ker_row[kx]; 
         for (int ox = 0; ox < W; ++ox)
         {
-          out_row[ox] += in_row[ox] * kval; // unit-stride, no cross-lane dependency
+          out_row[ox] += in_row[ox + kx] * kval; 
         }
       }
     }
