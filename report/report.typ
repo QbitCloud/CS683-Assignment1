@@ -45,7 +45,50 @@ For the naive variant of Tiling we got an MPKI of 1.099
   [Cycles], [920,331,028],
   [L1d cache loads], [894,269,791],
   [L1d cache load misses], [4,812,940],
+  [MPKI], [1.099],
 )
+#v(-0.6em)
+#align(center)[#text(size: 9pt, fill: muted)[Table: Performance statistics of naive 2D convolution.]]
+
+Here follows our findings on the effect of tile sizes for different size matrices, we found that very narrow rectangular tiles gave the best and nearly identical results. For the graded case of 2048 x 2048 we noticed that 2 x 512 performed the best in terms of MPKI.
+
+#restable(
+  (auto, auto, auto, auto, auto),
+  ([Tile size ($H × W$)], [$N = 256$], [$N = 512$], [$N = 1024$], [$N = 2048$]),
+  [2 × 512],  [1.620], [1.431], [1.200], [1.246],
+  [3 × 512],  [1.619], [1.437], [1.274], [1.430],
+  [5 × 512],  [1.623], [1.441], [1.326], [1.392],
+  [6 × 512],  [1.635], [1.422], [1.786], [1.584],
+  [64 × 512], [6.982], [7.274], [7.520], [7.499],
+  [64 × 64],  [5.905], [7.662], [8.229], [8.317],
+)
+#v(-0.6em)
+#align(center)[#text(size: 9pt, fill: muted)[Table: MPKI of Tiled code over various matrix sizes under different tile sizes ]]
+
+
+#restable(
+  (auto, auto, auto, auto, auto),
+  ([Tile size ($H × W$)], [$N = 256$], [$N = 512$], [$N = 1024$], [$N = 2048$]),
+  [2 × 512],  [1.23×], [1.43×], [1.24×], [1.31×],
+  [3 × 512],  [1.85×], [1.40×], [1.33×], [1.19×],
+  [5 × 512],  [1.68×], [1.54×], [1.28×], [1.23×],
+  [6 × 512],  [1.72×], [1.26×], [1.32×], [1.23×],
+  [64 × 512], [1.44×], [1.38×], [1.17×], [1.08×],
+  [64 × 64],  [1.10×], [1.03×], [1.15×], [1.00×],
+)
+#v(-0.6em)
+#align(center)[#text(size: 9pt, fill: muted)[Table: Speedup of Tiled code over naive code at different tile and matrix sizes.]]
+
+
+
+
+#plot("figures/task1b_mpki_vs_size.svg",
+  [L1-D MPKI versus image size for each tile size. Note the broken axis: the
+   $"TILE"_H = 64$ controls sit roughly 5× above every candidate that fits in the
+   48 KiB L1.])
+
+#plot("figures/task1b_speedup_vs_size.svg",
+  [Speedup over `conv_naive` versus image size for each tile size.])
 
 
 == Task 1C: SIMD
