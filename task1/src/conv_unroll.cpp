@@ -1,16 +1,19 @@
 // conv_unroll.cpp  STAGE 2: LOOP UNROLLING
+
 #include "convolution.h"
 
 void conv_unroll(const float *in, float *out, const float *ker,
                  int H, int W, int K)
 {
     const int p = K / 2;
-    const int in_stride = W + 2 * p; // padded row stride
+    const int in_stride = W + 2 * p;
 
     for (int oy = 0; oy < H; ++oy)
     {
+        // Unrolled ox in terms of 8 independent operations
         for (int ox = 0; ox < W; ox += 8)
         {
+            // Defining 8 acc
             float acc0 = 0.0f;
             float acc1 = 0.0f;
             float acc2 = 0.0f;
@@ -24,6 +27,7 @@ void conv_unroll(const float *in, float *out, const float *ker,
             {
                 for (int kx = 0; kx < K; ++kx)
                 {
+                    // 8 independent operation at a time
                     acc0 += in[(oy + ky) * in_stride + (ox + 0 + kx)] * ker[ky * K + kx];
                     acc1 += in[(oy + ky) * in_stride + (ox + 1 + kx)] * ker[ky * K + kx];
                     acc2 += in[(oy + ky) * in_stride + (ox + 2 + kx)] * ker[ky * K + kx];

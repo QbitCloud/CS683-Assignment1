@@ -1,29 +1,64 @@
 // conv_simd.cpp  STAGE 4: SIMD with AVX2 intrinsics
-#include <immintrin.h>
 
+#include <immintrin.h>
 #include "convolution.h"
 
+// 256-bit SIMD version
 void conv_simd(const float *in, float *out, const float *ker,
                int H, int W, int K)
 {
     const int p = K / 2;
-    const int in_stride = W + 2 * p; // padded row stride
+    const int in_stride = W + 2 * p;
 
     for (int oy = 0; oy < H; ++oy)
     {
         for (int ox = 0; ox < W; ox += 8)
         {
+            // Taking simd register as acc and setting its value to 0
             __m256 acc = _mm256_setzero_ps();
             for (int ky = 0; ky < K; ++ky)
             {
                 for (int kx = 0; kx < K; ++kx)
                 {
+                    // Loading input values in simd register
                     __m256 input = _mm256_loadu_ps(&in[(oy + ky) * in_stride + (ox + kx)]);
+
+                    // Brodcasting kernal value
                     __m256 kernal = _mm256_broadcast_ss(&ker[ky * K + kx]);
+
+                    // Performing input * kernal + acc
                     acc = _mm256_fmadd_ps(input, kernal, acc);
                 }
             }
+
+            // storing acc in output location
             _mm256_storeu_ps(&out[oy * W + ox], acc);
         }
     }
 }
+
+// 128-bit SIMD version
+// void conv_simd(const float *in, float *out, const float *ker,
+//                int H, int W, int K)
+// {
+//     const int p = K / 2;
+//     const int in_stride = W + 2 * p;
+
+//     for (int oy = 0; oy < H; ++oy)
+//     {
+//         for (int ox = 0; ox < W; ox += 4)
+//         {
+//             __m128 acc = _mm_setzero_ps();
+//             for (int ky = 0; ky < K; ++ky)
+//             {
+//                 for (int kx = 0; kx < K; ++kx)
+//                 {
+//                     __m128 input = _mm_loadu_ps(&in[(oy + ky) * in_stride + (ox + kx)]);
+//                     __m128 kernal = _mm_broadcast_ss(&ker[ky * K + kx]);
+//                     acc = _mm_fmadd_ps(input, kernal, acc);
+//                 }
+//             }
+//             _mm_storeu_ps(&out[oy * W + ox], acc);
+//         }
+//     }
+// }
